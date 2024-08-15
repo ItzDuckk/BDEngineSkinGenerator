@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>BDEngine Generators</title>
+    <style>
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-logo-title">
+            <img src="logo.png" alt="Logo" class="header-logo">
+            <h1>BDEngine Generators</h1>
+        </div>
+        <nav>
+            <ul>
+                <li>Made By Duck</li>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <div class="skin-settings-container">
+                        <!-- Rendered Image Section -->
+                <h2>Generate Skin</h2>
+                <p>Choose Settings For Your Skin</p>
+                <div class="skin-settings">
+                    <label>
+                        <div class="skin-settings">
+                            <label>
+                                <input type="radio" name="skin-type" value="classic" checked>
+                                <h3>Classic</h3>
+                            </label>
+                            <label class="coming-soon">
+                                <input type="radio" name="skin-type" value="slim" disabled>
+                                <h4>Slim <span class="coming-soon-text">(Coming Soon)</span></h4>
+                            </label>
+                            
+                            
+                        </div>
+                        
+                    </label>
+                </div>
+                <div class="content-wrapper">
+    <div class="skin-settings-container">
+        <!-- Your existing content goes here -->
+    </div>
+        <div class="rendered-image-container">
+            <img id="rendered-image" src="https://vzge.me/full/384/3cd8f02501785d16b093f4d659698a79fcd50a0094f53349d48d6632fc6e132d" alt="Rendered Image">
+        </div>
+</div>
+
+                </div>
+                <div class="generator-links">
+                    <button type="button" onclick="document.getElementById('upload-input').click()">Upload Skin File</button>
+                    <input type="file" id="upload-input" style="display: none;" accept="image/*">
+                    <input type="text" placeholder="Enter Username" class="username-input" id="username-input">
+                </div>
+                <div class="generator-links">
+                    <input type="text" id="api-key" placeholder="Enter API Key" class="api-key-input">
+                </div>
+                
+                <div class="generator-links">
+                    <button type="button" onclick="generateSkin()">Generate!</button>
+                </div>
+                <!-- Loading bar container -->
+<div id="loading-bar-container" hidden>
+    <div id="loading-bar">0%</div>
+</div>
+                <div class="generator-links">
+                    <button type="button" id="download-bdengine" style="display: none;" onclick="downloadBDEngineFile()">Download BDEngine File</button>
+                </div>
+                
+                </div>
+
+            </div>
+        
+            <div id="canvasesContainer" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: left;"></div>
+        </section>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js"></script>
+
+    <script>
+        const uploadInput = document.getElementById('upload-input');
+        const usernameInput = document.getElementById('username-input');
+        const renderedImage = document.getElementById('rendered-image');
+        const skinDisplayDiv = document.getElementById('skin-display');
+        const canvasesContainer = document.getElementById('canvasesContainer');
+        const downloadBDEngineButton = document.getElementById('download-bdengine');
+        const results = {};
+        const loadingBarContainer = document.getElementById('loading-bar-container');
+        const loadingBar = document.getElementById('loading-bar');
+        const template_jsonClassic=[{"isCollection":true,"name":"Player Statue","nbt":"","settings":{"defaultBrightness":false},"mainNBT":"","transforms":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[{"isCollection":true,"name":"Player Root","nbt":"","transforms":[1,0,0,-0.5078125,0,1,0,-0.015624999999999889,0,0,1,-0.265625,0,0,0,1],"children":[{"isCollection":true,"name":"Right Leg","nbt":"","transforms":[1,0,0,0.5,0,1,0,0.003906249999999889,0,0,1,0.1328125,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Leg_Lower"},"transforms":[0.49999999999999994,0,0,0.13281249999999997,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Leg_Upper"},"transforms":[0.49999999999999994,0,0,0.13281249999999997,0,0.49999999999999994,0,0.7656249999999998,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]}],"animation":[],"pivotCustom":[0.13281249999999997,0.76171875,0.1328125],"defaultTransform":{"position":[0.125,0.7656249999999999,0],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}},{"isCollection":true,"name":"Left Leg","nbt":"","transforms":[1,0,0,0.25,0,1,0,0,0,0,1,0.1328125,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Leg_Lower"},"transforms":[0.49999999999999994,0,0,0.13281249999999994,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Leg_Upper"},"transforms":[0.49999999999999994,0,0,0.13281249999999994,0,0.49999999999999994,0,0.7656249999999998,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]}],"animation":[],"pivotCustom":[0.1328125,0.7656249999999999,0.1328125],"defaultTransform":{"position":[-0.125,0.7656249999999999,0],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}},{"isCollection":true,"name":"Torso","nbt":"","transforms":[1,0,0,0,0,1,0,0.75,0,0,1,0,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Body_Upper"},"transforms":[1,0,0,0.5078125,0,0.5,0,0.7656249999999999,0,0,0.5,0.265625,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Body_Lower"},"transforms":[0.9999999999999999,0,0,0.5078124999999999,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.26562499999999994,0,0,0,1]},{"isCollection":true,"name":"Left Arm","nbt":"","transforms":[1,0,0,0,0,1,0,0,0,0,1,0.1328125,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Arm_Lower"},"transforms":[0.49999999999999994,0,0,0.13281249999999994,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.13281249999999994,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Arm_Upper"},"transforms":[0.5,0,0,0.1328125,0,0.5,0,0.7656249999999999,0,0,0.5,0.1328125,0,0,0,1]}],"animation":[],"pivotCustom":[0.1953125,0.7031249999999999,0.1328125],"defaultTransform":{"position":[-0.3125,0.6875,0],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}},{"isCollection":true,"name":"Right Arm","nbt":"","transforms":[1,0,0,0.75,0,1,0,0,0,0,1,0.1328125,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Arm_Upper"},"transforms":[0.5,0,0,0.1328125,0,0.5,0,0.7656249999999999,0,0,0.5,0.13281250000000067,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Arm_Lower"},"transforms":[0.49999999999999994,0,0,0.1328125,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.13281249999999994,0,0,0,1]}],"animation":[],"pivotCustom":[0.0703125,0.7031249999999999,0.13281250000000033],"defaultTransform":{"position":[0.3125,0.6875,3.3306690738754696e-16],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}},{"isCollection":true,"name":"Head","nbt":"","transforms":[1,0,0,0.2421875,0,1,0,0.7499999999999999,0,0,1,0,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Head"},"transforms":[1,0,0,0.265625,0,1,0,0.515625,0,0,1,0.265625,0,0,0,1]}],"animation":[],"pivotCustom":[0.265625,0.015625,0.265625],"defaultTransform":{"position":[0,0.75,0],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}}],"animation":[],"pivotCustom":[0.5078125,0.015624999999999889,0.265625],"defaultTransform":{"position":[0,0.7656249999999999,0],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}}],"animation":[],"pivotCustom":[0.5078125,0,0.265625],"defaultTransform":{"position":[0,-0.015624999999999889,0],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}}]}]
+        const template_jsonSlim=[{"isCollection":true,"name":"Project","nbt":"","settings":{"defaultBrightness":false},"mainNBT":"","transforms":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],"children":[{"isCollection":true,"name":"Player Root","nbt":"","transforms":[1,0,0,-0.5078125,0,1,0,-0.015624999999999889,0,0,1,-0.265625,0,0,0,1],"children":[{"isCollection":true,"name":"Right Leg","nbt":"","transforms":[1,0,0,0.5,0,1,0,0,0,0,1,0.13281249999999997,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Leg_Lower"},"transforms":[0.49999999999999994,0,0,0.13281249999999997,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Leg_Upper"},"transforms":[0.49999999999999994,0,0,0.13281249999999997,0,0.49999999999999994,0,0.7656249999999998,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]}],"animation":[],"defaultTransform":{"position":[-0.0078125,0,-0.13281250000000003],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}},{"isCollection":true,"name":"Left Leg","nbt":"","transforms":[1,0,0,0.25,0,1,0,0,0,0,1,0.13281249999999997,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Leg_Lower"},"transforms":[0.49999999999999994,0,0,0.13281249999999994,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Leg_Upper"},"transforms":[0.49999999999999994,0,0,0.13281249999999994,0,0.49999999999999994,0,0.7656249999999998,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]}],"animation":[],"defaultTransform":{"position":[-0.2578125,0,-0.13281250000000003],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}},{"isCollection":true,"name":"Torso","nbt":"","transforms":[1,0,0,0,0,1,0,0.75,0,0,1,0,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Body_Upper"},"transforms":[1,0,0,0.5078125,0,0.5,0,0.7656249999999999,0,0,0.5,0.265625,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Body_Lower"},"transforms":[0.9999999999999999,0,0,0.5078124999999999,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.26562499999999994,0,0,0,1]},{"isCollection":true,"name":"Left Arm","nbt":"","transforms":[1,0,0,0.0078125,0,1,0,0,0,0,1,0.13281249999999997,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Arm_Lower1"},"customTexture":null,"transforms":[0.25,0,0,0.1875,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Arm_Upper1"},"customTexture":null,"transforms":[0.25,0,0,0.1875,0,0.5,0,0.7656249999999999,0,0,0.5,0.13281250000000003,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Arm_Upper2"},"customTexture":null,"transforms":[0.125,0,0,0.09375,0,0.5,0,0.7656249999999999,0,0,0.5,0.13281250000000003,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Left_Arm_Lower2"},"customTexture":null,"transforms":[0.125,0,0,0.09375,0,0.9999999999999999,0,0.5156249999999999,0,0,0.49999999999999994,0.13281249999999997,0,0,0,1]}],"animation":[],"defaultTransform":{"position":[0.0078125,0,0.13281249999999997],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}},{"isCollection":true,"name":"Right Arm","nbt":"","transforms":[1,0,0,0.75,0,1,0,0,0,0,1,0.13281249999999997,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Arm_Upper1"},"customTexture":null,"transforms":[0.25,0,0,0.0703125,0,0.5,0,0.7656249999999999,0,0,0.5,0.1328125000000007,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Arm_Lower1"},"customTexture":null,"transforms":[0.25,0,0,0.0703125,0,1,0,0.5156249999999999,0,0,0.5,0.13281249999999997,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Arm_Lower2"},"customTexture":null,"transforms":[0.125,0,0,0.16375,0,1,0,0.5156249999999999,0,0,0.5,0.13281249999999997,0,0,0,1]},{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Right_Arm_Upper2"},"customTexture":null,"transforms":[0.125,0,0,0.16375,0,0.5,0,0.7656249999999999,0,0,0.5,0.1328125000000007,0,0,0,1]}],"animation":[],"defaultTransform":{"position":[0.75,0,0.13281249999999997],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}},{"isCollection":true,"name":"Head","nbt":"","transforms":[1,0,0,0.2421875,0,1,0,0.7499999999999999,0,0,1,0,0,0,0,1],"children":[{"isItemDisplay":true,"name":"player_head[display=none]","brightness":{"sky":15,"block":0},"nbt":"","tagHead":{"Id":"","Name":"","Value":"Head"},"transforms":[1,0,0,0.265625,0,1,0,0.515625,0,0,1,0.265625,0,0,0,1]}],"animation":[],"defaultTransform":{"position":[0.2421875,0.7499999999999999,0],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}}],"animation":[],"defaultTransform":{"position":[-0.5078125,0.75,-0.265625],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}}],"animation":[],"pivotCustom":[0.5078125,0,0.265625],"defaultTransform":{"position":[0,-0.015624999999999889,0],"rotation":{"x":0,"y":0,"z":0},"scale":[1,1,1]}}]}]
+        const mappingsGroupsClassic = [
+            {
+                name: 'Right_Leg_Upper',
+                mappings: [
+                    { x: 4, y: 16, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 4, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 12, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 8, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 0, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 0, pasteY: 8, title: 'in_left' },
+                    
+                    { x: 4, y: 32, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 40, pasteY: 0, title: 'out_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 48, pasteY: 0, title: 'out_down' },
+                    { x: 4, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 40, pasteY: 8, title: 'out_front' },
+                    { x: 12, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 56, pasteY: 8, title: 'out_back' },
+                    { x: 8, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 8, title: 'out_right' },
+                    { x: 0, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 32, pasteY: 8, title: 'out_left' }
+                ]
+            },
+            {
+                name: 'Right_Leg_Lower',
+                mappings: [
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 8, y: 16, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 4, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 12, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 8, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 0, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 0, pasteY: 8, title: 'in_left' },
+
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 40, pasteY: 0, title: 'out_up' },
+                    { x: 8, y: 32, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 0, title: 'out_down' },
+                    { x: 4, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 40, pasteY: 8, title: 'out_front' },
+                    { x: 12, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 56, pasteY: 8, title: 'out_back' },
+                    { x: 8, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 48, pasteY: 8, title: 'out_right' },
+                    { x: 0, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 32, pasteY: 8, title: 'out_left' }
+                ] 
+            },
+            {
+                name: 'Left_Leg_Upper',
+                mappings: [
+                    { x: 20, y: 48, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 20, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 28, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 24, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 16, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 0, pasteY: 8, title: 'in_left' },
+                    
+                    { x: 4, y: 48, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 40, pasteY: 0, title: 'in_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 48, pasteY: 0, title: 'in_down' },
+                    { x: 4, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 40, pasteY: 8, title: 'in_front' },
+                    { x: 12, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 56, pasteY: 8, title: 'in_back' },
+                    { x: 8, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 8, title: 'in_right' },
+                    { x: 0, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 32, pasteY: 8, title: 'in_left' },
+                ]
+            },
+            {
+                name: 'Left_Leg_Lower',
+                mappings: [
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 24, y: 48, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 20, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 28, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 24, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 16, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 0, pasteY: 8, title: 'in_left' },   
+                    
+                    { x: 0, y: 0, w: 4, h: 1, scale_x: 8, scale_y: 8, pasteX: 40, pasteY: 0, title: 'in_up' },
+                    { x: 8, y: 48, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 0, title: 'in_down' },
+                    { x: 4, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 40, pasteY: 8, title: 'in_front' },
+                    { x: 12, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 56, pasteY: 8, title: 'in_back' },
+                    { x: 8, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 48, pasteY: 8, title: 'in_right' },
+                    { x: 0, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 32, pasteY: 8, title: 'in_left' },
+                ] 
+            },
+            {
+                 name: 'Right_Arm_Upper',
+                mappings: [
+                    { x: 44, y: 16, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 44, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 52, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 48, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 40, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 0, pasteY: 8, title: 'in_left' },
+        
+                    { x: 44, y: 32, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 40, pasteY: 0, title: 'out_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 48, pasteY: 0, title: 'out_down' },
+                    { x: 44, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 40, pasteY: 8, title: 'out_front' },
+                    { x: 52, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 56, pasteY: 8, title: 'out_back' },
+                    { x: 48, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 8, title: 'out_right' },
+                    { x: 40, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 32, pasteY: 8, title: 'out_left' }
+                ]
+            },
+            {
+                name: 'Right_Arm_Lower',
+                mappings: [
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 48, y: 16, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 44, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 52, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 48, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 40, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 0, pasteY: 8, title: 'in_left' },
+
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 40, pasteY: 0, title: 'out_up' },
+                    { x: 48, y: 32, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 0, title: 'out_down' },
+                    { x: 44, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 40, pasteY: 8, title: 'out_front' },
+                    { x: 52, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 56, pasteY: 8, title: 'out_back' },
+                    { x: 48, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 48, pasteY: 8, title: 'out_right' },
+                    { x: 40, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 32, pasteY: 8, title: 'out_left' }
+                ] 
+            },
+            {
+                name: 'Left_Arm_Upper',
+                mappings: [
+                    { x: 36, y: 48, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 36, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 44, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 40, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 32, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 0, pasteY: 8, title: 'in_left' },
+        
+                    { x: 52, y: 48, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 40, pasteY: 0, title: 'in_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 48, pasteY: 0, title: 'in_down' },
+                    { x: 52, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 40, pasteY: 8, title: 'in_front' },
+                    { x: 60, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 56, pasteY: 8, title: 'in_back' },
+                    { x: 56, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 8, title: 'in_right' },
+                    { x: 48, y: 52, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 32, pasteY: 8, title: 'in_left' }
+                ]
+            },
+            {
+                name: 'Left_Arm_Lower',
+                mappings: [
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 40, y: 48, w: 4, h: 8, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 36, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 44, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 40, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 32, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 0, pasteY: 8, title: 'in_left' },   
+                    
+                    { x: 0, y: 0, w: 4, h: 1, scale_x: 8, scale_y: 8, pasteX: 40, pasteY: 0, title: 'in_up' },
+                    { x: 56, y: 48, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 0, title: 'in_down' },
+                    { x: 52, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 40, pasteY: 8, title: 'in_front' },
+                    { x: 60, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 56, pasteY: 8, title: 'in_back' },
+                    { x: 56, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 48, pasteY: 8, title: 'in_right' },
+                    { x: 48, y: 56, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 32, pasteY: 8, title: 'in_left' },
+                ] 
+            },
+            {
+                name: 'Body_Upper',
+                mappings: [
+                    { x: 20, y: 16, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 20, y: 20, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 32, y: 20, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 28, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 16, y: 20, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 0, pasteY: 8, title: 'in_left' },
+
+                    { x: 20, y: 32, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 40, pasteY: 0, title: 'in_up' },
+                    { x: 0, y: 0, w: 1, h: 1, scale_x: 8, scale_y: 8, pasteX: 48, pasteY: 0, title: 'in_down' },
+                    { x: 20, y: 36, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 40, pasteY: 8, title: 'in_front' },
+                    { x: 32, y: 36, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 56, pasteY: 8, title: 'in_back' },
+                    { x: 28, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 48, pasteY: 8, title: 'in_right' },
+                    { x: 16, y: 36, w: 4, h: 4, scale_x: 2, scale_y: 2, pasteX: 32, pasteY: 8, title: 'in_left' },
+                ]  
+            },
+            {
+                name: 'Body_Lower',
+                mappings: [
+                    { x: 0, y: 0, w: 8, h: 4, scale_x: 8, scale_y: 8, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 28, y: 16, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 20, y: 24, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 32, y: 24, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 28, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 16, y: 24, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 0, pasteY: 8, title: 'in_left' },
+
+                    { x: 0, y: 0, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 40, pasteY: 0, title: 'in_up' },
+                    { x: 28, y: 32, w: 8, h: 4, scale_x: 1, scale_y: 2, pasteX: 48, pasteY: 0, title: 'in_down' },
+                    { x: 20, y: 40, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 40, pasteY: 8, title: 'in_front' },
+                    { x: 32, y: 40, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 56, pasteY: 8, title: 'in_back' },
+                    { x: 28, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 48, pasteY: 8, title: 'in_right' },
+                    { x: 16, y: 40, w: 4, h: 8, scale_x: 2, scale_y: 1, pasteX: 32, pasteY: 8, title: 'in_left' },
+                ]  
+            },
+            {
+                name: 'Head',
+                mappings: [
+                    { x: 8, y: 0, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 8, pasteY: 0, title: 'in_up' },
+                    { x: 16, y: 0, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 16, pasteY: 0, title: 'in_down' },
+                    { x: 8, y: 8, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 8, pasteY: 8, title: 'in_front' },
+                    { x: 24, y: 8, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 24, pasteY: 8, title: 'in_back' },
+                    { x: 16, y: 8, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 16, pasteY: 8, title: 'in_right' },
+                    { x: 0, y: 8, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 0, pasteY: 8, title: 'in_left' },
+
+                    { x: 40, y: 0, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 40, pasteY: 0, title: 'in_up' },
+                    { x: 48, y: 0, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 48, pasteY: 0, title: 'in_down' },
+                    { x: 40, y: 8, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 40, pasteY: 8, title: 'in_front' },
+                    { x: 56, y: 8, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 56, pasteY: 8, title: 'in_back' },
+                    { x: 48, y: 8, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 48, pasteY: 8, title: 'in_right' },
+                    { x: 32, y: 8, w: 8, h: 8, scale_x: 1, scale_y: 1, pasteX: 32, pasteY: 8, title: 'in_left' },
+                ]  
+            },
+            
+        ];
+        const selectedRadio = document.querySelector('input[name="skin-type"]:checked').value;
+
+        let mappingsGroups;
+
+        if (selectedRadio === 'classic') {
+    mappingsGroups = mappingsGroupsClassic;
+        } else if (selectedRadio === 'slim') {
+    mappingsGroups = mappingsGroupsSlim;
+        }
+console.log(mappingsGroups)
+// Now you can use `mappingsGroups` in the rest of your code
+ 
+// Handle File Upload
+uploadInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imageUrl = e.target.result;
+            processUploadedSkin(imageUrl);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+
+
+usernameInput.addEventListener('input', function() {
+    const username = this.value.trim();
+    const defaultSkinUrl = 'https://vzge.me/full/384/3cd8f02501785d16b093f4d659698a79fcd50a0094f53349d48d6632fc6e132d';
+    const renderedImage = document.getElementById('rendered-image');
+
+    if (username !== '') {
+        const skinUrl = `https://vzge.me/full/384/${username}`;
+        
+        // Update the src attribute of the rendered image
+        renderedImage.src = skinUrl;
+
+        // Set alt text to the username
+        renderedImage.alt = `${username}'s skin`;
+
+        // Optional: Add error handling if the image doesn't load
+        renderedImage.onerror = function() {
+            renderedImage.src = defaultSkinUrl; // Revert to default image if there's an error
+            renderedImage.alt = 'Invalid Username';
+        };
+    } else {
+        // If the input is empty, revert to the default skin
+        renderedImage.src = defaultSkinUrl;
+        renderedImage.alt = 'Default Skin';
+    }
+});
+
+
+// Function to Process Uploaded Skin
+async function processUploadedSkin(imageUrl) {
+    const image = new Image();
+    image.src = imageUrl;
+
+    image.onload = async function() {
+        if (image.width !== 64 || image.height !== 64) {
+            alert('The image must be 64x64 pixels.');
+            return;
+        }
+
+        // You can handle the uploaded skin differently here
+        // For example, you could directly call the generateSkin function or another function
+        // that does something different for uploaded files
+        await generateSkinFromFile(image);
+    };
+}
+
+// Function to Handle API Call for Uploaded Skin
+uploadInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = function() {
+                // Call generateSkinFromFile with the uploaded image
+                generateSkinFromFile(img);
+            };
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+async function generateSkinFromFile(image) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    ctx.drawImage(image, 0, 0);
+
+    canvas.toBlob(async function(blob) {
+        const apiUrl = 'https://api.mineskin.org/generate/upload';
+        const formData = new FormData();
+        formData.append('file', blob, 'skin.png');
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate skin: ' + response.statusText);
+            }
+
+            const data = await response.json();
+
+            // Extract the skin URL from the response
+            const skinUrl = data.data.texture.urls.skin;
+
+            // Extract the portion after "texture/"
+            const textureID = skinUrl.split('/texture/')[1];
+
+            // Update the rendered image in the div
+            const renderedImage = document.getElementById('rendered-image');
+            renderedImage.src = `https://vzge.me/full/384/${textureID}`;
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }, 'image/png');
+}
+
+        async function generateSkin() {
+    let imageUrl;
+
+    // Show the loading bar when the process starts
+    loadingBarContainer.style.display = 'flex'; // Change display to flex to show the bar
+    loadingBar.style.width = '0%';
+    loadingBar.innerText = '0%';
+
+    if (uploadInput.files.length > 0) {
+        const file = uploadInput.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            imageUrl = e.target.result;
+            processImage(imageUrl);
+        };
+        
+        reader.readAsDataURL(file);
+    } else if (usernameInput.value.trim() !== '') {
+        const username = usernameInput.value.trim();
+        imageUrl = `https://minotar.net/skin/${username}`;
+        
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // Ensure the image can be used cross-origin
+        img.src = imageUrl;
+        
+        img.onload = function() {
+            processImage(img.src);
+        };
+
+        img.onerror = function() {
+            alert('Failed to load the skin for the entered username.');
+            loadingBarContainer.style.display = 'none'; // Hide the loading bar on error
+        };
+    } else {
+        alert('Please upload a skin image or enter a username.');
+        loadingBarContainer.style.display = 'none'; // Hide the loading bar if there's an error
+    }
+}
+
+
+async function renderGroup(groupIndex, image, ctx) {
+    const group = mappingsGroups[groupIndex];
+    const mappings = group.mappings;
+
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.msImageSmoothingEnabled = false;
+
+    mappings.forEach(mapping => {
+        const { x, y, w, h, scale_x, scale_y, pasteX, pasteY } = mapping;
+
+        const scaledWidth = w * scale_x;
+        const scaledHeight = h * scale_y;
+
+        ctx.drawImage(
+            image,
+            x, y, w, h,
+            pasteX, pasteY, scaledWidth, scaledHeight
+        );
+    });
+
+    // Update loading bar progress
+    const progress = ((groupIndex + 1) / mappingsGroups.length) * 100;
+    loadingBar.style.width = `${progress}%`;
+    loadingBar.innerText = `${Math.floor(progress)}%`;
+
+    // Convert the canvas to a Blob and upload it
+    return new Promise((resolve, reject) => {
+        ctx.canvas.toBlob(async function(blob) {
+            if (blob) {
+                try {
+                    await uploadSkin(blob, group.name);
+                    resolve(); // Resolve the promise when done
+                } catch (error) {
+                    reject(error); // Reject the promise on error
+                }
+            } else {
+                reject('Blob creation failed');
+            }
+        }, 'image/png');
+    });
+}
+
+async function processImage(imageUrl) {
+    const selectedRadio = document.querySelector('input[name="skin-type"]:checked').value;
+
+    let mappingsGroups;
+    let template_json;
+    if (selectedRadio === 'classic') {
+        mappingsGroups = mappingsGroupsClassic;
+        template_json = template_jsonClassic;
+    } else if (selectedRadio === 'slim') {
+        mappingsGroups = mappingsGroupsSlim;
+        template_json = template_jsonSlim;
+    }
+    console.log("mappingsGroups",mappingsGroups)
+
+    const image = new Image();
+    image.crossOrigin = "anonymous"; // Ensure the image can be used cross-origin
+    image.src = imageUrl;
+
+    image.onload = async function() {
+        if (image.width !== 64 || image.height !== 64) {
+            alert('The image must be 64x64 pixels.');
+            loadingBarContainer.style.display = 'none'; // Hide loading bar if there's an error
+            return;
+        }
+
+        canvasesContainer.innerHTML = '';
+        canvasesContainer.style.display = 'none';  // Hide the output images
+
+        // Reset progress bar
+        loadingBar.style.width = '0%';
+        loadingBar.innerText = '0%';
+
+        for (let i = 0; i < mappingsGroups.length; i++) {
+            console.log(mappingsGroups)
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = 64;
+            canvas.height = 64;
+            canvas.className = 'groupCanvas';
+            canvas.id = `groupCanvas${i}`;
+
+            canvasesContainer.appendChild(canvas);
+
+            await renderGroup(i, image, ctx); // Wait for each group to finish rendering
+
+            // Update the loading bar progress
+            const progress = ((i + 1) / mappingsGroups.length) * 100;
+            loadingBar.style.width = `${progress}%`;
+            loadingBar.innerText = `${Math.floor(progress)}%`;
+        }
+        // Wait for 1 second before updating the text and centering it
+        setTimeout(() => {
+            // Set the loading bar text to "COMPLETE GENERATING" and center it
+            loadingBar.style.width = '100%';
+            loadingBar.innerText = 'Skin Generated';
+            loadingBar.style.textAlign = 'center'; // Center the text when done
+
+            // Show the download and copy buttons
+            downloadBDEngineButton.style.display = 'inline-block';
+
+            // Hide the loading bar after a brief delay
+            setTimeout(() => {
+            }, 500); // Adjust the delay as needed (2000 ms = 2 seconds)
+        }, 500); // 1000 ms = 1 second delay
+    };
+}
+
+function downloadBDEngineFile() {
+    // Determine which template to use based on the selected radio button
+    const selectedRadio = document.querySelector('input[name="skin-type"]:checked').value;
+    let template_json;
+
+    if (selectedRadio === 'classic') {
+        template_json = template_jsonClassic;
+    } else if (selectedRadio === 'slim') {
+        template_json = template_jsonSlim;
+    }
+
+    make_new_json(template_json, results);
+}
+
+
+async function renderGroup(groupIndex, image, ctx) {
+    const group = mappingsGroups[groupIndex];
+    const mappings = group.mappings;
+
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.msImageSmoothingEnabled = false;
+
+    mappings.forEach(mapping => {
+        const { x, y, w, h, scale_x, scale_y, pasteX, pasteY } = mapping;
+
+        const scaledWidth = w * scale_x;
+        const scaledHeight = h * scale_y;
+
+        ctx.drawImage(
+            image,
+            x, y, w, h,
+            pasteX, pasteY, scaledWidth, scaledHeight
+        );
+    });
+
+    // Convert the canvas to a Blob and upload it
+    return new Promise((resolve, reject) => {
+        ctx.canvas.toBlob(async function(blob) {
+            if (blob) {
+                try {
+                    await uploadSkin(blob, group.name);
+                    resolve(); // Resolve the promise when done
+                } catch (error) {
+                    reject(error); // Reject the promise on error
+                }
+            } else {
+                reject('Blob creation failed');
+            }
+        }, 'image/png');
+    });
+}
+
+function copyCommand() {
+    const jsonString = JSON.stringify(template_json);
+    const compressedBase64 = btoa(String.fromCharCode.apply(null, compressed));
+
+    navigator.clipboard.writeText(compressedBase64).then(function() {
+        alert('BDEngine File copied to clipboard!');
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+    });
+}
+
+
+
+async function uploadSkin(blob, groupName) {
+    const url = 'https://api.mineskin.org/generate/upload';
+    const apiKey = document.getElementById('api-key').value.trim(); // Get the API key from the input field
+
+    if (!apiKey) {
+        alert('Please enter a valid API key.');
+        return;
+    }
+
+    const headers = {
+        'Accept': 'application/json',
+        'User-Agent': 'MyFancyUserAgent/1.0',
+        'Authorization': `Bearer ${apiKey}` // Use the entered API key
+    };
+    const selectedRadio = document.querySelector('input[name="skin-type"]:checked');
+
+    const formData = new FormData();
+    formData.append('model', 'steve');
+    formData.append('variant', selectedRadio);
+    formData.append('name', groupName);
+    formData.append('visibility', '1');
+    formData.append('file', blob, groupName + '.png');
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+
+        const data = await response.json();
+        console.log("making",groupName)
+        // Save the group name and texture value in the results object
+        results[groupName] = data.data.texture.value;
+
+        return data;
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+}
+
+
+
+
+
+        function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+function downloadStringAsFile(content, filename) {
+    // Create a blob from the string content
+    const blob = new Blob([content], { type: 'text/plain' });
+
+    // Create a link element
+    const link = document.createElement('a');
+
+    // Set the download attribute with the desired file name
+    link.download = filename;
+
+    // Create a URL for the blob and set it as the href attribute
+    link.href = window.URL.createObjectURL(blob);
+
+    // Append the link to the document body
+    document.body.appendChild(link);
+
+    // Trigger the download by simulating a click on the link
+    link.click();
+
+    // Remove the link from the document
+    document.body.removeChild(link);
+}
+
+function make_new_json(data, results) {
+    function updateTagHeadValue(item) {
+     
+        if (item.tagHead && item.tagHead.Value) {
+            console.log(item.tagHead,results)
+            if (item.tagHead.Value in results) {
+                item.tagHead.Value = results[item.tagHead.Value];
+            }
+        }
+
+        // Recursively update children if they exist
+        if (item.children && item.children.length > 0) {
+          
+            item.children.forEach(child => updateTagHeadValue(child));
+        }
+    }
+
+    // Start with the root item
+    data.forEach(rootItem => {
+        updateTagHeadValue(rootItem);
+    });
+
+    const jsonString = JSON.stringify(data);
+
+    const compressed = pako.gzip(jsonString);
+    console.log(jsonString)
+    // Convert the compressed data (which is a Uint8Array) to a base64 string for easier handling
+    const compressedBase64 = btoa(String.fromCharCode.apply(null, compressed));
+
+    console.log(compressedBase64);
+    downloadStringAsFile(compressedBase64, "Player Statue.bdengine");
+}
+
+
+
+    </script>
+</body>
+</html>
